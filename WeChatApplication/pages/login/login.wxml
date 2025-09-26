@@ -1,0 +1,42 @@
+<!--login.wxml - 微信登录页面-->
+<view class="container">
+  <view class="login-content">
+    <!-- Logo区域 -->
+    <view class="logo-section">
+      <image class="app-logo" src="https://picsum.photos/200" mode="aspectFit"></image>
+      <text class="app-name">校园活动报名</text>
+      <text class="app-desc">让校园生活更精彩</text>
+    </view>
+
+    <!-- 登录按钮区域 -->
+    <view class="login-section">
+      <button 
+        class="login-btn {{loading ? 'loading' : ''}}" 
+        bindtap="onWechatLogin"
+        disabled="{{loading}}"
+      >
+        <text wx:if="{{!loading}}" class="login-icon">🔑</text>
+        <text wx:if="{{loading}}" class="loading-icon">⏳</text>
+        <text class="login-text">{{loading ? '登录中...' : '微信登录'}}</text>
+      </button>
+      
+      <text class="login-tip">使用微信账号快速登录</text>
+    </view>
+
+    <!-- 功能介绍 -->
+    <view class="features-section">
+      <view class="feature-item">
+        <text class="feature-icon">📅</text>
+        <text class="feature-text">发现精彩活动</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">👥</text>
+        <text class="feature-text">轻松报名参与</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">🎯</text>
+        <text class="feature-text">管理我的活动</text>
+      </view>
+    </view>
+  </view>
+</view>

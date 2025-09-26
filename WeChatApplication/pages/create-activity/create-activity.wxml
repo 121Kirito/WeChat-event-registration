@@ -1,0 +1,298 @@
+<!--create-activity.wxml - 发布活动页面-->
+<view class="container">
+  <scroll-view class="form-scroll" scroll-y="true">
+    <!-- 基本信息 -->
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      
+      <view class="form-item">
+        <text class="form-label required">活动标题</text>
+        <input 
+          class="form-input" 
+          placeholder="请输入活动标题" 
+          value="{{formData.title}}"
+          bindinput="onTitleInput"
+          maxlength="50"
+        />
+        <text class="char-count">{{formData.title.length}}/50</text>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label required">活动简介</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请简要描述活动内容..." 
+          value="{{formData.description}}"
+          bindinput="onDescriptionInput"
+          maxlength="200"
+        ></textarea>
+        <text class="char-count">{{formData.description.length}}/200</text>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label">活动分类</text>
+        <picker 
+          range="{{categories}}" 
+          range-key="name"
+          value="{{categoryIndex}}"
+          bindchange="onCategoryChange"
+        >
+          <view class="picker-display">
+            {{categories[categoryIndex] ? categories[categoryIndex].name : '请选择分类'}}
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 时间地点 -->
+    <view class="form-section">
+      <view class="section-title">时间地点</view>
+      
+      <view class="form-item">
+        <text class="form-label required">活动时间</text>
+        <picker 
+          mode="date" 
+          value="{{formData.startDate}}"
+          bindchange="onStartDateChange"
+        >
+          <view class="picker-display">
+            {{formData.startDate || '请选择日期'}}
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label required">开始时间</text>
+        <picker 
+          mode="time" 
+          value="{{formData.startTime}}"
+          bindchange="onStartTimeChange"
+        >
+          <view class="picker-display">
+            {{formData.startTime || '请选择时间'}}
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label required">活动地点</text>
+        <input 
+          class="form-input" 
+          placeholder="请输入活动地点" 
+          value="{{formData.location}}"
+          bindinput="onLocationInput"
+        />
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label required">报名截止时间</text>
+        <picker 
+          mode="date" 
+          value="{{formData.deadline}}"
+          bindchange="onDeadlineChange"
+        >
+          <view class="picker-display">
+            {{formData.deadline || '请选择截止日期'}}
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 参与信息 -->
+    <view class="form-section">
+      <view class="section-title">参与信息</view>
+      
+      <view class="form-item">
+        <text class="form-label required">最大参与人数</text>
+        <input 
+          class="form-input" 
+          type="number" 
+          placeholder="请输入最大参与人数" 
+          value="{{formData.maxParticipants}}"
+          bindinput="onMaxParticipantsInput"
+        />
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label">活动费用</text>
+        <view class="fee-input-wrapper">
+          <text class="fee-symbol">¥</text>
+          <input 
+            class="form-input fee-input" 
+            type="digit" 
+            placeholder="0.00" 
+            value="{{formData.fee}}"
+            bindinput="onFeeInput"
+          />
+        </view>
+        <text class="form-hint">免费活动请填写0</text>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label">参与要求</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请说明参与活动的要求或条件..." 
+          value="{{formData.requirements}}"
+          bindinput="onRequirementsInput"
+          maxlength="300"
+        ></textarea>
+        <text class="char-count">{{formData.requirements.length}}/300</text>
+      </view>
+    </view>
+
+    <!-- 活动详情 -->
+    <view class="form-section">
+      <view class="section-title">活动详情</view>
+      
+      <view class="form-item">
+        <text class="form-label">活动安排</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请详细说明活动流程和时间安排..." 
+          value="{{formData.schedule}}"
+          bindinput="onScheduleInput"
+          maxlength="500"
+        ></textarea>
+        <text class="char-count">{{formData.schedule.length}}/500</text>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label">奖励说明</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请说明活动奖励或奖品..." 
+          value="{{formData.rewards}}"
+          bindinput="onRewardsInput"
+          maxlength="300"
+        ></textarea>
+        <text class="char-count">{{formData.rewards.length}}/300</text>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label">联系方式</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请提供联系人信息..." 
+          value="{{formData.contact}}"
+          bindinput="onContactInput"
+          maxlength="200"
+        ></textarea>
+        <text class="char-count">{{formData.contact.length}}/200</text>
+      </view>
+    </view>
+
+    <!-- 活动图片 -->
+    <view class="form-section">
+      <view class="section-title">活动图片</view>
+      
+      <view class="form-item">
+        <text class="form-label">上传图片</text>
+        <view class="image-upload">
+          <view 
+            wx:for="{{formData.images}}" 
+            wx:key="*this" 
+            class="image-item"
+          >
+            <image class="uploaded-image" src="{{item}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}"></image>
+            <view class="image-delete" bindtap="onDeleteImage" data-index="{{index}}">
+              <text class="delete-icon">✕</text>
+            </view>
+          </view>
+          
+          <view 
+            wx:if="{{formData.images.length < 5}}"
+            class="image-upload-btn" 
+            bindtap="onChooseImage"
+          >
+            <text class="upload-icon">📷</text>
+            <text class="upload-text">添加图片</text>
+          </view>
+        </view>
+        <text class="form-hint">最多上传5张图片，建议尺寸750x400px</text>
+      </view>
+    </view>
+
+    <!-- 活动标签 -->
+    <view class="form-section">
+      <view class="section-title">活动标签</view>
+      
+      <view class="form-item">
+        <text class="form-label">选择标签</text>
+        <view class="tags-selector">
+          <view 
+            wx:for="{{availableTags}}" 
+            wx:key="*this"
+            class="tag-item {{formData.tags.includes(item) ? 'selected' : ''}}"
+            bindtap="onToggleTag"
+            data-tag="{{item}}"
+          >
+            {{item}}
+          </view>
+        </view>
+        <text class="form-hint">最多选择5个标签</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-actions">
+    <button class="preview-btn" bindtap="onPreview">预览</button>
+    <button class="publish-btn" bindtap="onPublish">发布活动</button>
+  </view>
+</view>
+
+<!-- 预览弹窗 -->
+<view class="modal-overlay" wx:if="{{showPreviewModal}}" bindtap="onClosePreview">
+  <view class="modal-content preview-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">活动预览</text>
+      <text class="close-btn" bindtap="onClosePreview">✕</text>
+    </view>
+    
+    <scroll-view class="preview-scroll" scroll-y="true">
+      <view class="preview-activity">
+        <!-- 活动图片 -->
+        <swiper wx:if="{{formData.images.length > 0}}" class="preview-swiper" indicator-dots="true">
+          <swiper-item wx:for="{{formData.images}}" wx:key="*this">
+            <image class="preview-image" src="{{item}}" mode="aspectFill" binderror="onImageError" data-index="{{index}}"></image>
+          </swiper-item>
+        </swiper>
+        
+        <!-- 活动信息 -->
+        <view class="preview-info">
+          <text class="preview-title">{{formData.title}}</text>
+          <text class="preview-description">{{formData.description}}</text>
+          
+          <view class="preview-meta">
+            <view class="meta-item">
+              <text class="meta-icon">🕐</text>
+              <text class="meta-text">{{formData.startDate}} {{formData.startTime}}</text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-icon">📍</text>
+              <text class="meta-text">{{formData.location}}</text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-icon">👥</text>
+              <text class="meta-text">最多{{formData.maxParticipants}}人</text>
+            </view>
+          </view>
+          
+          <view class="preview-tags" wx:if="{{formData.tags.length > 0}}">
+            <text wx:for="{{formData.tags}}" wx:key="*this" class="preview-tag">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    
+    <view class="modal-footer">
+      <button class="cancel-btn" bindtap="onClosePreview">继续编辑</button>
+      <button class="confirm-btn" bindtap="onConfirmPublish">确认发布</button>
+    </view>
+  </view>
+</view>

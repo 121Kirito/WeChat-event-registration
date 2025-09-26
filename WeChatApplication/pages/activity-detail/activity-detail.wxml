@@ -1,0 +1,143 @@
+<!--activity-detail.wxml - 活动详情页面-->
+<view class="container">
+  <!-- 活动图片轮播 -->
+  <swiper class="activity-swiper" indicator-dots="true" autoplay="false" interval="3000" duration="500">
+    <swiper-item wx:for="{{activity.images}}" wx:key="*this">
+      <image class="swiper-image" src="{{item}}" mode="aspectFill" binderror="onDetailImageError" data-index="{{index}}"></image>
+    </swiper-item>
+  </swiper>
+
+  <!-- 活动基本信息 -->
+  <view class="activity-header">
+    <view class="activity-title-section">
+      <text class="activity-title">{{activity.title}}</text>
+      <view class="status-tag {{activity.status === 'active' ? 'active' : 'expired'}}">
+        {{activity.status === 'active' ? '报名中' : '已截止'}}
+      </view>
+    </view>
+    
+    <view class="activity-meta">
+      <view class="meta-item">
+        <text class="meta-icon">🕐</text>
+        <text class="meta-text">活动时间：{{activity.startDate}} {{activity.startTime}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="meta-icon">📍</text>
+        <text class="meta-text">活动地点：{{activity.location}}</text>
+      </view>
+      <view class="meta-item">
+        <text class="meta-icon">👥</text>
+        <text class="meta-text">报名人数：{{activity.registeredCount}}/{{activity.maxParticipants}}人</text>
+      </view>
+      <view class="meta-item">
+        <text class="meta-icon">⏰</text>
+        <text class="meta-text">报名截止：{{activity.deadline}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 活动详情内容 -->
+  <view class="activity-content">
+    <view class="content-section">
+      <view class="section-title">活动介绍</view>
+      <text class="section-content">{{activity.description}}</text>
+    </view>
+
+    <view class="content-section" wx:if="{{activity.requirements}}">
+      <view class="section-title">参与要求</view>
+      <text class="section-content">{{activity.requirements}}</text>
+    </view>
+
+    <view class="content-section" wx:if="{{activity.schedule}}">
+      <view class="section-title">活动安排</view>
+      <text class="section-content">{{activity.schedule}}</text>
+    </view>
+
+    <view class="content-section" wx:if="{{activity.rewards}}">
+      <view class="section-title">奖励说明</view>
+      <text class="section-content">{{activity.rewards}}</text>
+    </view>
+
+    <view class="content-section" wx:if="{{activity.contact}}">
+      <view class="section-title">联系方式</view>
+      <text class="section-content">{{activity.contact}}</text>
+    </view>
+  </view>
+
+  <!-- 活动标签 -->
+  <view class="activity-tags" wx:if="{{activity.tags && activity.tags.length > 0}}">
+    <view class="tags-title">活动标签</view>
+    <view class="tags-list">
+      <text wx:for="{{activity.tags}}" wx:key="*this" class="tag">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 报名者列表 -->
+  <view class="participants-section" wx:if="{{participants.length > 0}}">
+    <view class="section-title">已报名用户</view>
+    <view class="participants-list">
+      <view wx:for="{{participants}}" wx:key="id" class="participant-item">
+        <image class="participant-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+        <text class="participant-name">{{item.name}}</text>
+        <text class="participant-time">{{item.registerTime}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-actions">
+    <view class="action-info">
+      <text class="price-text" wx:if="{{activity.fee > 0}}">费用：¥{{activity.fee}}</text>
+      <text class="price-text free" wx:else>免费活动</text>
+    </view>
+    
+    <button 
+      class="register-btn {{canRegister ? 'active' : 'disabled'}}"
+      bindtap="onRegister"
+      disabled="{{!canRegister || isRegistered}}"
+    >
+      {{isRegistered ? '已报名' : (canRegister ? '立即报名' : (registerReason || '报名已截止'))}}
+    </button>
+  </view>
+</view>
+
+<!-- 报名确认弹窗 -->
+<view class="modal-overlay" wx:if="{{showRegisterModal}}" bindtap="onCloseModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">确认报名</text>
+      <text class="close-btn" bindtap="onCloseModal">✕</text>
+    </view>
+    
+    <view class="modal-body">
+      <view class="confirm-info">
+        <text class="confirm-title">{{activity.title}}</text>
+        <view class="confirm-details">
+          <text class="confirm-item">活动时间：{{activity.startDate}} {{activity.startTime}}</text>
+          <text class="confirm-item">活动地点：{{activity.location}}</text>
+          <text class="confirm-item" wx:if="{{activity.fee > 0}}">活动费用：¥{{activity.fee}}</text>
+        </view>
+      </view>
+      
+      <view class="form-section">
+        <view class="form-item">
+          <text class="form-label">姓名</text>
+          <input class="form-input" placeholder="请输入您的姓名" value="{{userInfo.name}}" bindinput="onNameInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">手机号</text>
+          <input class="form-input" placeholder="请输入手机号" value="{{userInfo.phone}}" bindinput="onPhoneInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">备注</text>
+          <textarea class="form-textarea" placeholder="选填，如特殊需求等" value="{{userInfo.remark}}" bindinput="onRemarkInput"></textarea>
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="cancel-btn" bindtap="onCloseModal">取消</button>
+      <button class="confirm-btn" bindtap="onConfirmRegister">确认报名</button>
+    </view>
+  </view>
+</view>
