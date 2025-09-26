@@ -1,0 +1,145 @@
+<!--index.wxml - 活动列表首页-->
+<view class="container">
+  <!-- 轮播图 -->
+  <swiper class="banner-swiper" indicator-dots="true" autoplay="true" interval="3000" duration="500">
+    <swiper-item wx:for="{{bannerImages}}" wx:key="*this">
+      <image class="banner-image" src="{{item}}" mode="aspectFill" binderror="onBannerImageError" data-index="{{index}}"></image>
+    </swiper-item>
+  </swiper>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <text class="search-icon">🔍</text>
+      <input 
+        class="search-input" 
+        placeholder="搜索活动，如：篮球比赛" 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+        bindconfirm="onSearch"
+      />
+    </view>
+    <button class="search-btn" bindtap="onSearch">搜索</button>
+  </view>
+
+  <!-- 排序和筛选 -->
+  <view class="filter-bar">
+    <view class="sort-options">
+      <text class="sort-label">排序：</text>
+      <text 
+        class="sort-item {{sortType === 'time' ? 'active' : ''}}" 
+        bindtap="onSortChange" 
+        data-type="time"
+      >最新发布</text>
+      <text 
+        class="sort-item {{sortType === 'deadline' ? 'active' : ''}}" 
+        bindtap="onSortChange" 
+        data-type="deadline"
+      >截止时间</text>
+      <text 
+        class="sort-item {{sortType === 'popular' ? 'active' : ''}}" 
+        bindtap="onSortChange" 
+        data-type="popular"
+      >报名人数</text>
+    </view>
+    
+    <!-- 筛选功能 -->
+    <view class="filter-options">
+      <view class="filter-section">
+        <text class="filter-label">类型：</text>
+        <picker 
+          class="filter-picker" 
+          mode="selector" 
+          range="{{pickerTypes}}" 
+          value="{{typeIndex}}" 
+          bindchange="onTypePickerChange"
+        >
+          <view class="picker-text">
+            {{selectedType || '全部'}}
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="filter-section">
+        <text class="filter-label">标签：</text>
+        <scroll-view class="filter-scroll" scroll-x="true">
+          <view class="filter-items">
+            <text 
+              class="filter-item {{selectedTag === '' ? 'active' : ''}}" 
+              bindtap="onTagFilter" 
+              data-tag=""
+            >全部</text>
+            <text 
+              wx:for="{{activityTags}}" 
+              wx:key="*this"
+              class="filter-item {{selectedTag === item ? 'active' : ''}}" 
+              bindtap="onTagFilter" 
+              data-tag="{{item}}"
+            >{{item}}</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 活动列表 -->
+  <scroll-view class="activity-list" scroll-y="true" bindscrolltolower="onLoadMore">
+    <view wx:if="{{filteredActivities.length === 0 && !loading}}" class="empty-state">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">{{searchKeyword ? '没有找到相关活动' : '暂无活动'}}</text>
+    </view>
+
+    <view wx:for="{{filteredActivities}}" wx:key="id" class="activity-card" bindtap="onActivityTap" data-id="{{item.id}}">
+      <!-- 活动状态标签 -->
+      <view class="status-tag {{item.status === 'active' ? 'active' : 'expired'}}">
+        {{item.status === 'active' ? '报名中' : '已截止'}}
+      </view>
+
+      <!-- 活动图片 -->
+      <image class="activity-image" src="{{item.image}}" mode="aspectFill" binderror="onListImageError" data-index="{{index}}"></image>
+
+      <!-- 活动信息 -->
+      <view class="activity-info">
+        <view class="activity-header">
+          <text class="activity-title">{{item.title}}</text>
+          <view class="activity-meta">
+            <text class="activity-date">{{item.startDate}}</text>
+          </view>
+        </view>
+
+        <text class="activity-description">{{item.description}}</text>
+
+        <view class="activity-footer">
+          <view class="activity-stats">
+            <text class="stat-icon">👥</text>
+            <text class="stat-text">{{item.registeredCount}}/{{item.maxParticipants}}人</text>
+          </view>
+          <view class="activity-deadline">
+            <text class="stat-icon">⏰</text>
+            <text class="stat-text">截止：{{item.deadline}}</text>
+          </view>
+        </view>
+
+        <!-- 活动标签和分类 -->
+        <view class="activity-tags-section">
+          <view class="activity-tags">
+            <text wx:for="{{item.tags}}" wx:key="*this" class="tag">{{item}}</text>
+          </view>
+          <view class="activity-category">
+            <text class="category-text">{{item.category || '其他'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{loading}}" class="loading">
+      <text>加载中...</text>
+    </view>
+    <view wx:if="{{noMoreData && filteredActivities.length > 0}}" class="no-more">
+      <text>没有更多活动了</text>
+    </view>
+  </scroll-view>
+</view>

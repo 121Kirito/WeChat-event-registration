@@ -1,0 +1,134 @@
+<!--my-activities.wxml - 我的活动页面-->
+<view class="container">
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-number">{{totalRegistered}}</text>
+        <text class="stat-label">已报名</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{completedActivities}}</text>
+        <text class="stat-label">已完成</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{upcomingActivities}}</text>
+        <text class="stat-label">即将开始</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view 
+      wx:for="{{filterTabs}}" 
+      wx:key="key"
+      class="tab-item {{currentFilter === item.key ? 'active' : ''}}"
+      bindtap="onFilterChange"
+      data-key="{{item.key}}"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- 活动列表 -->
+  <scroll-view class="activities-list" scroll-y="true" bindscrolltolower="onLoadMore">
+    <view wx:if="{{filteredActivities.length === 0 && !loading}}" class="empty-state">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">{{getEmptyText()}}</text>
+    </view>
+
+    <view wx:for="{{filteredActivities}}" wx:key="id" class="activity-item">
+      <!-- 活动状态标签 -->
+      <view class="status-badge {{item.status}}">
+        {{getStatusText(item.status)}}
+      </view>
+
+      <!-- 活动信息 -->
+      <view class="activity-content" bindtap="onActivityTap" data-id="{{item.id}}">
+        <image class="activity-image" src="{{item.image}}" mode="aspectFill" binderror="onMyImageError" data-index="{{index}}"></image>
+        
+        <view class="activity-info">
+          <view class="activity-header">
+            <text class="activity-title">{{item.title}}</text>
+            <text class="activity-date">{{item.startDate}}</text>
+          </view>
+          
+          <text class="activity-description">{{item.description}}</text>
+          
+          <view class="activity-meta">
+            <view class="meta-item">
+              <text class="meta-icon">🕐</text>
+              <text class="meta-text">{{item.startTime}}</text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-icon">📍</text>
+              <text class="meta-text">{{item.location}}</text>
+            </view>
+          </view>
+          
+          <view class="registration-info">
+            <text class="register-time">报名时间：{{item.registerTime}}</text>
+            <text class="register-status" wx:if="{{item.registerStatus}}">{{item.registerStatus}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="activity-actions">
+        <button 
+          class="action-btn secondary" 
+          bindtap="onViewDetail" 
+          data-id="{{item.id}}"
+        >
+          查看详情
+        </button>
+        
+        <button 
+          wx:if="{{item.status === 'upcoming'}}"
+          class="action-btn danger" 
+          bindtap="onCancelRegister" 
+          data-id="{{item.id}}"
+        >
+          取消报名
+        </button>
+        
+        <button 
+          wx:if="{{item.status === 'completed'}}"
+          class="action-btn primary" 
+          bindtap="onRateActivity" 
+          data-id="{{item.id}}"
+        >
+          评价活动
+        </button>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{loading}}" class="loading">
+      <text>加载中...</text>
+    </view>
+    <view wx:if="{{noMoreData && filteredActivities.length > 0}}" class="no-more">
+      <text>没有更多活动了</text>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 取消报名确认弹窗 -->
+<view class="modal-overlay" wx:if="{{showCancelModal}}" bindtap="onCloseCancelModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">取消报名</text>
+    </view>
+    
+    <view class="modal-body">
+      <text class="modal-message">确定要取消报名"{{cancelActivity.title}}"吗？</text>
+      <text class="modal-warning">取消后如需参加请重新报名</text>
+    </view>
+    
+    <view class="modal-footer">
+      <button class="cancel-btn" bindtap="onCloseCancelModal">不取消</button>
+      <button class="confirm-btn" bindtap="onConfirmCancel">确认取消</button>
+    </view>
+  </view>
+</view>
