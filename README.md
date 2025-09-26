@@ -1,8 +1,8 @@
 # WeChat-event-registration
-这是一个校园活动报名的微信小程序,功能未全面开发只实现了主要功能
-为了应付课设，使用cursor一小时开发完成
-项目架构：Spring Boot + MybatisPlus +微信小程序
-项目启动需要将appID与后端appid和密钥一致
+这是一个校园活动报名的微信小程序,功能未全面开发只实现了主要功能<br>
+为了应付课设，使用cursor一小时开发完成<br>
+项目架构：Spring Boot + MybatisPlus +微信小程序<br>
+项目启动需要将appID与后端appid和密钥一致<br>
 
 <img width="1866" height="1260" alt="371E83B2E727A0C4A7982498EB54147A" src="https://github.com/user-attachments/assets/d97d0a43-5078-43b6-85a7-3b827005a961" />
 <img width="555" height="1085" alt="E5647B73331586D5B6BD8BC733D8919B" src="https://github.com/user-attachments/assets/e2170e20-fe9c-4aec-809b-60b2de07581d" />
